@@ -14,8 +14,25 @@ https://cloud.google.com/storage/transfer/create-transfer
 """
 
     @staticmethod
-    def create(description, project_id, year, month, day, hours, minutes,
-             source_bucket, access_key, secret_access_key, sink_bucket):
+    def create(**kwargs):
+        print(kwargs)
+
+        date = datetime.datetime.strptime(kwargs.get('date'), '%Y/%m/%d')
+        time = datetime.datetime.strptime(kwargs.get('time'), '%H:%M')
+
+        description = kwargs.get('description') 
+        project_id = kwargs.get('project_id') 
+        year = date.year
+        month = date.month
+        day = date.day
+        hours = time.hour 
+        minutes = time.minute
+        source_bucket = kwargs.get('source_bucket') 
+        access_key = kwargs.get('access_key') 
+        secret_access_key = kwargs.get('secret_access_key')
+        sink_bucket = kwargs.get('sink_bucket')
+
+
         """Create a one-off transfer from Amazon S3 to Google Cloud Storage."""
         storagetransfer = googleapiclient.discovery.build('storagetransfer', 'v1')
 
@@ -60,7 +77,10 @@ https://cloud.google.com/storage/transfer/create-transfer
             json.dumps(result, indent=4)))
 
     @staticmethod
-    def check(project_id, job_name):
+    def check(**kwargs):
+
+        project_id = kwargs.get('project_id')
+        job_name = kwargs.get('job_name')
         """Review the transfer operations associated with a transfer job."""
         storagetransfer = googleapiclient.discovery.build('storagetransfer', 'v1')
 
@@ -113,10 +133,6 @@ if __name__ == '__main__':
 
 
     args = parser.parse_args()
-    date = datetime.datetime.strptime(args.date, '%Y/%m/%d')
-    time = datetime.datetime.strptime(args.time, '%H:%M')
-
-    inputs = var(args)
-    inputs['hours'] = time.hour
-    inputs['minutes'] = time.minute
+    inputs = vars(args)
+    print(inputs)
     args.func(**inputs) 
